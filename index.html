@@ -83,11 +83,46 @@
             transform: rotateX(360deg) rotateY(360deg);
         }
     }
+
+    @media screen and (max-width: 428px){
+        .cube {
+            width: 200px;
+            height: 200px;
+        }
+
+        .cube img:nth-child(1) {
+            transform: rotateY(0deg) translateZ(100px);
+        }
+
+        .cube img:nth-child(2) {
+            transform: rotateY(90deg) translateZ(100px);
+        }
+
+        .cube img:nth-child(3) {
+            transform: rotateY(180deg) translateZ(100px);
+        }
+
+        .cube img:nth-child(4) {
+            transform: rotateY(-90deg) translateZ(100px);
+        }
+
+        .cube img:nth-child(5) {
+            transform: rotateX(90deg) translateZ(100px);
+        }
+
+        .cube img:nth-child(6) {
+            transform: rotateX(-90deg) translateZ(100px);
+        }
+
+    }
  </style>
 
  <!-- 
     Lưu ý :
+    WEB:
     Lý do translateZ của 6 tấm ảnh đều là 150px vì cube có width và height đều là 300px => Lấy 300 / 2 là ra 150
+    MOBILE:
+    Lý do translateZ của 6 tấm ảnh đều là 100px vì cube có width và height đều là 200px => Lấy 200 / 2 là ra 100
 -->
 
 <body>
