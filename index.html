@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mai Thị Thanh Thúy</title>
+</head>
+
+<!-- 
+    Lý thuyết
+    + perspective: Thông thường khi nhìn một thành phần ta sẽ thấy thành phần có dạng 2D (chiều rộng và chiều cao), 
+    để nhìn vật thể 3D ta cần có thêm chiều sâu, thuộc tính perspective sẽ cho ta thấy được chiều sâu của thành phần,
+    khoảng chiều sâu được tính từ điểm đặt ban đầu tới giá trị của perspective (theo đơn vị pixel).
+    + perspective-origin: định nghĩa trục quay cho thành phần có sử dụng perspective. (perspective-origin : trục-x trục-y;)
+ -->
+
+ <style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .container {
+        perspective: 1000px;
+        perspective-origin: 50% 50%;
+    }
+
+    .cube {
+        position: relative;
+        transform-style: preserve-3d;
+        width: 300px;
+        height: 300px;
+        animation: loop 10s linear infinite;
+    }
+
+    .cube img {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        opacity: 0.8;
+        object-fit: cover;
+    }
+
+    .cube img:nth-child(1) {
+        transform: rotateY(0deg) translateZ(150px);
+    }
+
+    .cube img:nth-child(2) {
+        transform: rotateY(90deg) translateZ(150px);
+    }
+
+    .cube img:nth-child(3) {
+        transform: rotateY(180deg) translateZ(150px);
+    }
+
+    .cube img:nth-child(4) {
+        transform: rotateY(-90deg) translateZ(150px);
+    }
+
+    .cube img:nth-child(5) {
+        transform: rotateX(90deg) translateZ(150px);
+    }
+
+    .cube img:nth-child(6) {
+        transform: rotateX(-90deg) translateZ(150px);
+    }
+
+    @keyframes loop {
+        from {
+            transform: rotateX(0deg) rotateY(0deg);
+        }
+        to {
+            transform: rotateX(360deg) rotateY(360deg);
+        }
+    }
+ </style>
+
+ <!-- 
+    Lưu ý :
+    Lý do translateZ của 6 tấm ảnh đều là 150px vì cube có width và height đều là 300px => Lấy 300 / 2 là ra 150
+-->
+
+<body>
+    <div class="container">
+        <div class="cube">
+            <img src="Thuy7.jpg" alt="">
+            <img src="Thuy8.jpg" alt="">
+            <img src="Thuy12.jpg" alt="">
+            <img src="Thuy17.jpg" alt="">
+            <img src="Thuy24.jpg" alt="">
+            <img src="Thuy35.jpg" alt="">
+        </div>
+    </div>
+</body>
+</html>
