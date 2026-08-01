@@ -62,6 +62,17 @@
     -webkit-perspective: 1200px;
   }
 
+  /* 
+      Lớp wrapper chịu trách nhiệm duy nhất: xoay quanh trục Y.
+      Cần preserve-3d để context 3D truyền xuống .cube bên trong.
+  */
+  .cube-wrapper {
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+    animation: spin-y 17s linear infinite;
+    will-change: transform;
+  }
+
   .cube {
     position: relative;
     width: var(--cube-size);
@@ -73,7 +84,12 @@
         */
     transform-style: preserve-3d;
     -webkit-transform-style: preserve-3d;
-    animation: loop 30s linear infinite;
+    /* 
+        - Chỉ xoay trục X — độc lập hoàn toàn với trục Y của wrapper cha.
+        - Tỉ lệ bất tương xứng (incommensurate) buộc quỹ đạo phủ đều
+          toàn bộ không gian định hướng, đảm bảo cả 6 mặt đều xuất hiện.
+    */
+    animation: spin-x 22s linear infinite;
     /* 
          - Báo trước cho trình duyệt rằng thuộc tính transform sẽ thường xuyên thay đổi,
           giúp trình duyệt có thể chuẩn bị các tối ưu render nếu cần.
@@ -111,7 +127,6 @@
               Không phải lúc nào cũng cần và hiệu quả có thể khác nhau tùy browser.
         */
     outline: 1px solid transparent;
-    will-change: transform;
   }
 
   /*
@@ -168,15 +183,19 @@
   }
 
   /* 
-      - Xoay đồng thời cả 2 trục X và Y từ 0deg đến 360deg, tạo nên chuyển động xoay đường chéo không gian 3D liên tục mượt mà.
-    */
-  @keyframes loop {
-    0% {
-      transform: rotateX(0deg) rotateY(0deg);
+      - Mỗi keyframe chỉ điều khiển 1 trục — đây là điều kiện bắt buộc.
+      - Nếu gộp cả 2 trục vào 1 keyframe với cùng tốc độ, trục xoay sẽ bị cố định
+        tại góc 45° (vector (1,1,0)), khiến một số mặt gần như không bao giờ hiện.
+  */
+  @keyframes spin-y {
+    to { 
+      transform: rotateY(360deg); 
     }
+  }
 
-    100% {
-      transform: rotateX(360deg) rotateY(360deg);
+  @keyframes spin-x {
+    to { 
+      transform: rotateX(360deg); 
     }
   }
 
@@ -191,13 +210,15 @@
 
 <body>
   <div class="container-cube">
-    <div class="cube">
-      <img src="Thuy7.jpg" alt="">
-      <img src="Thuy8.jpg" alt="">
-      <img src="Thuy12.jpg" alt="">
-      <img src="Thuy17.jpg" alt="">
-      <img src="Thuy24.jpg" alt="">
-      <img src="Thuy35.jpg" alt="">
+    <div class="cube-wrapper">
+      <div class="cube">
+        <img src="Thuy7.jpg" alt="">
+        <img src="Thuy8.jpg" alt="">
+        <img src="Thuy12.jpg" alt="">
+        <img src="Thuy17.jpg" alt="">
+        <img src="Thuy24.jpg" alt="">
+        <img src="Thuy35.jpg" alt="">
+      </div>
     </div>
   </div>
 </body>
