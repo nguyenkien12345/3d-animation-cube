@@ -43,6 +43,7 @@
   :root {
     --cube-size: 250px;
     --cube-half: calc(var(--cube-size) / 2);
+    --slider-size: 200px;
   }
 
   /*Dự án 1: 3D Cube*/
@@ -220,8 +221,8 @@
 
   .slider {
     position: relative;
-    width: 200px;
-    height: 200px;
+    width: var(--slider-size);
+    height: var(--slider-size);
     transform-style: preserve-3d;
     -webkit-transform-style: preserve-3d;
     animation: rotate 30s linear infinite;
@@ -234,12 +235,20 @@
     left: 0;
     width: 100%;
     height: 100%;
+    /* Đặt tâm xoay tại chính giữa phần tử */
     transform-origin: center;
+    /* Tiếp tục truyền không gian 3D xuống thẻ img bên trong */
     transform-style: preserve-3d;
     -webkit-transform-style: preserve-3d;
+    /* 
+      - Xoay thẻ span quanh trục Y theo góc chỉ định (với 8 ảnh: 360° / 8 = 45° mỗi ảnh)
+      -  --i là biến inline từ HTML (1, 2, 3... 8) giúp mỗi ảnh quay góc 45°, 90°, 135°, ...
+      - translateZ(350px): Sau khi đã xoay đúng hướng, đẩy thẻ span ra xa tâm 350px theo trục Z (chiều sâu)
+      => Tạo thành một vòng tròn lăng trụ có bán kính 350px
+    */
     transform: rotateY(calc(var(--i) * 45deg)) translateZ(350px);
-    -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
     will-change: transform;
   }
 
@@ -249,13 +258,15 @@
     height: 100%;
     border-radius: 20px;
     object-fit: cover;
+      /* Đổ bóng 3D mờ xung quanh giúp tấm ảnh nổi bật trên nền */
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
-    -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
     -webkit-mask-image: -webkit-radial-gradient(white, black);
     outline: 1px solid transparent;
   }
 
+  /* Xoay toàn bộ khung slider quanh trục Y từ 0° đến 360° */
   @keyframes rotate {
     0% {
       transform: rotateY(0deg);
