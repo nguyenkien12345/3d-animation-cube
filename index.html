@@ -8,181 +8,181 @@
     <title>Mai Thị Thanh Thúy</title>
 </head>
 
-<!-- 
-    Lý thuyết
-    + perspective: Thông thường khi nhìn một thành phần ta sẽ thấy thành phần có dạng 2D (chiều rộng và chiều cao), 
-    để nhìn vật thể 3D ta cần có thêm chiều sâu, thuộc tính perspective sẽ cho ta thấy được chiều sâu của thành phần,
-    khoảng chiều sâu được tính từ điểm đặt ban đầu tới giá trị của perspective (theo đơn vị pixel).
-    + perspective-origin: định nghĩa trục quay cho thành phần có sử dụng perspective. (perspective-origin : trục-x trục-y;)
- -->
-
- <style>
+<style>
+    /* ========== CẤU HÌNH CHUNG CỦA TOÀN BỘ DỰ ÁN ========== */
     * {
         margin: 0;
         padding: 0;
+        box-sizing: border-box;
+    }
+
+    html,
+    body {
+        width: 100%;
+        min-height: 100vh;
+        background: linear-gradient(to right, #2c5364, #0f2027);
+        overflow-x: hidden;
     }
 
     body {
-        width: 100vw;
-        height: 100%;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        background: linear-gradient(to right, #2c5364, #0f2027);
-        overflow: hidden;
+        padding: 120px 0 120px 0;
+        /* 
+           - Thuộc tính này chỉ tác động duy nhất lên chữ (Text/Font rendering), hoàn toàn không ảnh hưởng đến hình ảnh (img), 
+            đường vẽ vector hay khung thẻ HTML.
+           - Chỉ định cách làm mịn font trên trình duyệt WebKit (chủ yếu macOS/iOS).
+           - antialiased sử dụng grayscale antialiasing giúp chữ trông mảnh và mượt hơn.
+           - Không phải trình duyệt hay hệ điều hành nào cũng hỗ trợ thuộc tính này (Windows / Android hầu như bỏ qua thuộc tính này). 
+        */
+        -webkit-font-smoothing: antialiased;
     }
 
-    /*Dự án 1*/
-    .container {
-        margin-top: 100px;
-        perspective: 1000px;
+    :root {
+        --cube-size: 250px;
+        --cube-half: calc(var(--cube-size)/2);
+    }
+
+    /*Dự án 1: 3D Cube*/
+    .container-cube {
+        margin-top: 40px;
+        /* 
+            - Thuộc tính quan trọng nhất để kích hoạt 3D. Tạo phối cảnh cho các phần tử con sử dụng transform 3D
+              Khoảng cách từ mắt người nhìn (Virtual Camera) đến mặt phẳng màn hình.
+            - Nếu perspective càng nhỏ thì hiệu ứng phối cảnh càng mạnh. Các vật ở gần sẽ trông lớn hơn, các vật ở xa sẽ nhỏ đi nhanh hơn.
+              VD: Với perspective: 300px; => Khối lập phương sẽ méo rất mạnh.
+            - Nếu perspective lớn => Chiều sâu 3D vừa phải, tự nhiên và dễ nhìn, ít biến dạng hơn.
+        */
+        perspective: 1200px;
+        /* Điểm tụ góc nhìn (Vanishing Point) đặt chính giữa tâm phần tử (50 ngang, 50 dọc) giúp hiệu ứng xoay đều về mọi hướng. */
         perspective-origin: 50% 50%;
+        /* Bản tương thích cho các trình duyệt chạy nhân WebKit cũ. */
+        -webkit-perspective: 1200px;
     }
 
     .cube {
         position: relative;
+        width: var(--cube-size);
+        height: var(--cube-size);
+        /* 
+            - Các phần tử con không bị trình duyệt "ép phẳng" (flat) thành 2D, 
+              giữ nguyên các phép biến đổi 3D của phần tử con khi render, thay vì trình duyệt gom (flatten) chúng về mặt phẳng của phần tử cha.
+              Giúp các phần tử con có thể di chuyển trong không gian tọa độ 3D X, Y, Z. 
+        */
         transform-style: preserve-3d;
-        width: 250px;
-        height: 250px;
+        -webkit-transform-style: preserve-3d;
         animation: loop 30s linear infinite;
+        /* 
+         - Báo trước cho trình duyệt rằng thuộc tính transform sẽ thường xuyên thay đổi,
+          giúp trình duyệt có thể chuẩn bị các tối ưu render nếu cần.
+          Chỉ nên dùng khi phần tử thực sự được animate hoặc thay đổi liên tục.
+        - Trình duyệt có thể tạo compositing layer hoặc áp dụng các tối ưu tăng tốc phần cứng,
+          nhưng điều này không được đảm bảo và phụ thuộc từng browser.
+        */
+        will-change: transform;
     }
 
     .cube img {
+        /* 
+          - Xếp đè 6 tấm ảnh lên cùng vị trí ban đầu của khối .cube.
+          - Đặt tất cả các mặt của khối lập phương tại cùng một vị trí gốc trước khi dùng transform để đưa chúng ra các mặt khác nhau.
+        */
         position: absolute;
-        height: 100%;
+        top: 0;
+        left: 0;
         width: 100%;
-        opacity: 0.8;
+        height: 100%;
         object-fit: cover;
+        opacity: 1;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        /* Đổ bóng nhẹ xung quanh từng mặt ảnh, tăng tính chân thật 3D. */
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+        /* 
+          - Khóa mặt sau. 
+          - Khi một mặt ảnh xoay lật lưng về phía mắt người xem, trình duyệt sẽ ẩn hoàn toàn mặt sau đó đi, tránh nhìn thấy mặt sau của ảnh trong không gian 3D.
+        */
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        /* 
+            - Thủ thuật (workaround) giúp giảm một số lỗi hiển thị ở mép phần tử
+              khi thực hiện transform 3D trên một số trình duyệt.
+              Không phải lúc nào cũng cần và hiệu quả có thể khác nhau tùy browser.
+        */
+        outline: 1px solid transparent;
+        will-change: transform;
     }
 
+    /*
+      -  Lý do translateZ của 6 tấm ảnh đều là 125px vì cube có width và height đều là 250px => Lấy 250 / 2 là ra 125.
+      -  Mỗi mặt của khối lập phương được đặt cách tâm khối một nửa chiều dài cạnh.
+    */
+
+    /* 
+      - Mặt 1 (Phía trước - Front)
+      - Giữ nguyên hướng nhìn 0deg, đẩy tấm ảnh ra phía trước mặt người xem 125px theo trục Z.
+    */
     .cube img:nth-child(1) {
-        transform: rotateY(0deg) translateZ(125px);
+        transform: rotateY(0deg) translateZ(var(--cube-half));
     }
 
+    /* 
+      - Mặt 2 (Bên phải - Right)
+      - Xoay ảnh sang phải 90deg quanh trục Y, sau đó đẩy ra phía trước của mặt đó 125px.
+    */
     .cube img:nth-child(2) {
-        transform: rotateY(90deg) translateZ(125px);
+        transform: rotateY(90deg) translateZ(var(--cube-half));
     }
 
+    /* 
+      - Mặt 3 (Phía sau - Back)
+      - Xoay ngược ra đằng sau 180deg quanh trục Y, rồi đẩy ra 125px.
+    */
     .cube img:nth-child(3) {
-        transform: rotateY(180deg) translateZ(125px);
+        transform: rotateY(180deg) translateZ(var(--cube-half));
     }
 
+    /* 
+      - Mặt 4 (Bên trái - Left)
+      - Xoay ảnh sang trái -90deg quanh trục Y, rồi đẩy ra 125px.
+    */
     .cube img:nth-child(4) {
-        transform: rotateY(-90deg) translateZ(125px);
+        transform: rotateY(-90deg) translateZ(var(--cube-half));
     }
 
+    /*
+      - Mặt 5 (Mặt trên - Top)
+      - Ngửa ảnh lên trên 90deg quanh trục X, rồi đẩy lên trên 125px.
+    */
     .cube img:nth-child(5) {
-        transform: rotateX(90deg) translateZ(125px);
+        transform: rotateX(90deg) translateZ(var(--cube-half));
     }
 
+    /*
+      - Mặt 6 (Mặt dưới - Bottom)
+      - Úp ảnh xuống dưới -90deg quanh trục X, rồi đẩy xuống dưới 125px.
+    */
     .cube img:nth-child(6) {
-        transform: rotateX(-90deg) translateZ(125px);
+        transform: rotateX(-90deg) translateZ(var(--cube-half));
     }
 
+    /* 
+      - Xoay đồng thời cả 2 trục X và Y từ 0deg đến 360deg, tạo nên chuyển động xoay đường chéo không gian 3D liên tục mượt mà.
+    */
     @keyframes loop {
-        from {
+        0% {
             transform: rotateX(0deg) rotateY(0deg);
         }
-        to {
+
+        100% {
             transform: rotateX(360deg) rotateY(360deg);
         }
     }
-
-    /*Dự án 2*/
-    .slider {
-        margin-top: 200px;
-        position: relative;
-        transform-style: preserve-3d;
-        width: 250px;
-        height: 250px;
-        animation: rotate 30s linear infinite;
-    }
-
-    .slider span {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        transform-origin: center;
-        transform-style: preserve-3d;
-        transform: rotateY(calc(var(--i) * 45deg)) translateZ(350px);
-    }
-
-    .slider span img {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        border-radius: 100px;
-        object-fit: cover;
-        transition: all 2s;
-    }
-
-    @keyframes rotate {
-        0% {
-            transform: perspective(1000px) rotateY(0deg);
-        }
-        100% {
-            transform: perspective(1000px) rotateY(360deg);
-        }
-    }
-
-    @media screen and (max-width: 428px){
-        .cube {
-            width: 200px;
-            height: 200px;
-        }
-
-        .cube img:nth-child(1) {
-            transform: rotateY(0deg) translateZ(100px);
-        }
-
-        .cube img:nth-child(2) {
-            transform: rotateY(90deg) translateZ(100px);
-        }
-
-        .cube img:nth-child(3) {
-            transform: rotateY(180deg) translateZ(100px);
-        }
-
-        .cube img:nth-child(4) {
-            transform: rotateY(-90deg) translateZ(100px);
-        }
-
-        .cube img:nth-child(5) {
-            transform: rotateX(90deg) translateZ(100px);
-        }
-
-        .cube img:nth-child(6) {
-            transform: rotateX(-90deg) translateZ(100px);
-        }
-
-        .slider {
-            width: 100px;
-            height: 100px;
-        }
-
-         .slider span {
-        transform: rotateY(calc(var(--i) * 45deg)) translateZ(150px);
-    }
-
-
-    }
- </style>
-
- <!-- 
-    Lưu ý :
-    WEB:
-    Lý do translateZ của 6 tấm ảnh đều là 150px vì cube có width và height đều là 300px => Lấy 300 / 2 là ra 150
-    MOBILE:
-    Lý do translateZ của 6 tấm ảnh đều là 100px vì cube có width và height đều là 200px => Lấy 200 / 2 là ra 100
--->
+</style>
 
 <body>
-    <div class="container">
+    <div class="container-cube">
         <div class="cube">
             <img src="Thuy7.jpg" alt="">
             <img src="Thuy8.jpg" alt="">
@@ -192,16 +192,6 @@
             <img src="Thuy35.jpg" alt="">
         </div>
     </div>
-
-    <div class="slider">
-        <span style="--i:1;"><img src="Thuy7.jpg" alt=""></span>
-        <span style="--i:2;"><img src="Thuy8.jpg" alt=""></span>
-        <span style="--i:3;"><img src="Thuy12.jpg" alt=""></span>
-        <span style="--i:4;"><img src="Thuy16.jpg" alt=""></span>
-        <span style="--i:5;"><img src="Thuy17.jpg" alt=""></span>
-        <span style="--i:6;"><img src="Thuy20.jpg" alt=""></span>
-        <span style="--i:7;"><img src="Thuy24.jpg" alt=""></span>
-        <span style="--i:8;"><img src="Thuy35.jpg" alt=""></span>
-    </div>
 </body>
+
 </html>
