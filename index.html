@@ -63,8 +63,9 @@
   }
 
   /* 
-      Lớp wrapper chịu trách nhiệm duy nhất: xoay quanh trục Y.
-      Cần preserve-3d để context 3D truyền xuống .cube bên trong.
+      - cube-wrapper chịu trách nhiệm quay quanh trục Y.
+      - Tách riêng phép quay theo từng trục giúp dễ điều chỉnh tốc độ và tránh việc nhiều animation cùng ghi đè transform.
+      - Cần preserve-3d để context 3D truyền xuống .cube bên trong.
   */
   .cube-wrapper {
     transform-style: preserve-3d;
@@ -85,9 +86,11 @@
     transform-style: preserve-3d;
     -webkit-transform-style: preserve-3d;
     /* 
-        - Chỉ xoay trục X — độc lập hoàn toàn với trục Y của wrapper cha.
+        - Chỉ xoay trục X, độc lập hoàn toàn với trục Y của wrapper cha.
         - Tỉ lệ bất tương xứng (incommensurate) buộc quỹ đạo phủ đều
-          toàn bộ không gian định hướng, đảm bảo cả 6 mặt đều xuất hiện.
+          toàn bộ không gian định hướng.
+        - Hai tốc độ quay khác nhau (17s và 22s) giúp thay đổi liên tục hướng quan sát,
+          tăng khả năng mọi mặt lần lượt hướng về phía người xem. Giúp tránh việc quỹ đạo lặp lại quá sớm.
     */
     animation: spin-x 22s linear infinite;
     /* 
@@ -183,7 +186,7 @@
   }
 
   /* 
-      - Mỗi keyframe chỉ điều khiển 1 trục — đây là điều kiện bắt buộc.
+      - Mỗi keyframe chỉ điều khiển 1 trục.
       - Nếu gộp cả 2 trục vào 1 keyframe với cùng tốc độ, trục xoay sẽ bị cố định
         tại góc 45° (vector (1,1,0)), khiến một số mặt gần như không bao giờ hiện.
   */
