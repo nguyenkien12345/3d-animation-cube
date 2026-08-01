@@ -42,7 +42,7 @@
 
   :root {
     --cube-size: 250px;
-    --cube-half: calc(var(--cube-size)/2);
+    --cube-half: calc(var(--cube-size) / 2);
   }
 
   /*Dự án 1: 3D Cube*/
@@ -177,6 +177,14 @@
 
     100% {
       transform: rotateX(360deg) rotateY(360deg);
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+
+    /* Tất cả các mặt và translateZ tự động cập nhật theo */
+    :root {
+      --cube-size: 180px;
     }
   }
 </style>
