@@ -6,6 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mai Thị Thanh Thúy</title>
+  <link rel="stylesheet" href="./hourglass.css">
 </head>
 
 <style>
@@ -258,7 +259,7 @@
     height: 100%;
     border-radius: 20px;
     object-fit: cover;
-      /* Đổ bóng 3D mờ xung quanh giúp tấm ảnh nổi bật trên nền */
+    /* Đổ bóng 3D mờ xung quanh giúp tấm ảnh nổi bật trên nền */
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
@@ -319,6 +320,44 @@
       <span style="--i:8;"><img src="Thuy35.jpg" alt=""></span>
     </div>
   </div>
+
+  <!-- Dự án 3: 3D Hourglass Particle Photo Reveal -->
+  <div class="container-hourglass">
+    <div class="hourglass-title-box">
+      <h2>Mai Thị Thanh Thúy</h2>
+    </div>
+
+    <div class="hourglass-stage">
+      <!-- Khung này chịu trách nhiệm xoay lật 180° trong không gian 3D -->
+      <div class="hourglass-wrapper" id="hourglassWrapper">
+
+        <!-- Nắp vàng khóa đỉnh trên của đồng hồ cát -->
+        <div class="hourglass-cap top-cap"></div>
+
+        <!-- Hai cột trụ kim loại màu vàng 2 bên trái & phải nối liền từ nắp trên xuống nắp dưới -->
+        <div class="hourglass-pillar left"></div>
+
+        <!-- Hai cột trụ kim loại màu vàng 2 bên trái & phải nối liền từ nắp trên xuống nắp dưới -->
+        <div class="hourglass-pillar right"></div>
+
+        <!--  
+          - Trái tim đồ họa (Graphic Canvas) vẽ bầu thủy tinh và hạt cát
+          - B1) Vẽ đường cong Bezier tạo thành bầu thủy tinh trong suốt
+          - B2) Mô phỏng hàng trăm hạt cát rơi từ bầu trên luồn qua cổ hẹp xuống bầu dưới
+          - B3) Render bức ảnh Full HD sắc nét dâng lên theo mặt cát ở bầu dưới
+        -->
+        <canvas id="hourglassCanvas"></canvas>
+
+        <!-- Vệt sáng bóng của kính thủy tinh (Lớp phản quang thủy tinh) -->
+        <!-- <div class="glass-reflection"></div>  -->
+
+        <!-- Nắp vàng khóa đỉnh dưới của đồng hồ cát -->
+        <div class="hourglass-cap bottom-cap"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="hourglass.js"></script>
 </body>
 
 </html>

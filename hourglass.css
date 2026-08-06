@@ -1,0 +1,120 @@
+  /* Dự án 3: 3D Hourglass Particle Photo Reveal */
+  .container-hourglass {
+    margin-top: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    row-gap: 25px;
+    width: 100%;
+    margin-bottom: 80px;
+  }
+
+  .hourglass-title-box h2 {
+    font-size: 26px;
+    font-weight: 700;
+    /*  
+     - Tạo một lớp nền chuyển màu tuyến tính (Linear Gradient) nằm phía sau chữ
+     - 135deg (Góc nghiêng): Hướng dải màu chạy từ góc trên-trái xuống góc dưới-phải
+     - #ffd700: Điểm bắt đầu dải màu ở góc trên-trái
+     - #ff8c00: Màu trung gian ở chính giữa dải màu
+     - #ff007f: Điểm kết thúc dải màu ở góc dưới-phải
+    */
+    background: linear-gradient(135deg, #ffd700, #ff8c00, #ff007f);
+    /* Bình thường, background sẽ bao trùm toàn bộ khung hình chữ nhật của thẻ. Thuộc tính này giúp "cắt" dải màu nền chỉ hiển thị gói gọn bên trong các nét chữ */
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+    /* 
+      - Tạo hiệu ứng đổ bóng / phát sáng (Glow) cho văn bản
+      - 0 (X-offset): Bóng không bị lệch theo chiều ngang (trái/phải)
+      - 4px (Y-offset): Bóng bị đẩy xuống dưới 4px
+      - 10px (Blur radius): Độ mờ của bóng. Bán kính mờ 10px giúp bóng lan tỏa mềm mại như hiệu ứng phát sáng (Glow)
+      - rgba(255, 215, 0, 0.3): 255, 215, 0: Mã màu Vàng ánh kim (Gold)
+    */
+    filter: drop-shadow(0 4px 10px rgba(255, 215, 0, 0.3));
+  }
+
+  .hourglass-stage {
+    width: 320px;
+    height: 520px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .hourglass-wrapper {
+    position: relative;
+    width: 300px;
+    height: 500px;
+    transition: transform 1.3s cubic-bezier(0.65, 0, 0.35, 1);
+  }
+
+  /* Khung kim loại trên & dưới */
+  .hourglass-cap {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 230px;
+    height: 20px;
+    background: linear-gradient(90deg, #b8860b, #ffd700, #daa520, #ffd700, #b8860b);
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.8), inset 0 -2px 4px rgba(0, 0, 0, 0.6);
+    z-index: 10;
+  }
+
+  .hourglass-cap.top-cap {
+    top: 5px;
+  }
+
+  .hourglass-cap.bottom-cap {
+    bottom: 5px;
+  }
+
+  .hourglass-pillar {
+    position: absolute;
+    top: 20px;
+    width: 8px;
+    height: 460px;
+    background: linear-gradient(180deg, #ffd700, #b8860b, #ffd700);
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    z-index: 9;
+  }
+
+  .hourglass-pillar.left {
+    left: 40px;
+  }
+
+  .hourglass-pillar.right {
+    right: 40px;
+  }
+
+  #hourglassCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 4;
+  }
+
+  /* .glass-reflection {
+    position: absolute;
+    top: 25px;
+    left: 48px;
+    width: 204px;
+    height: 450px;
+    pointer-events: none;
+    z-index: 6;
+    background: linear-gradient(135deg,
+        rgba(255, 255, 255, 0.22) 0%,
+        rgba(255, 255, 255, 0.05) 40%,
+        transparent 55%,
+        rgba(255, 255, 255, 0.1) 100%);
+    border-radius: 95px;
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.15);
+  } */
