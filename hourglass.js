@@ -24,16 +24,16 @@
     canvas.height = H;
 
     // Thông số đồng hồ cát
-    const CX = W / 2;       // 150 (Đường trục tung chính giữa đồng hồ)
-    const NECK_Y = H / 2;   // 250 (Điểm thắt hẹp ở trung tâm đồng hồ cát)
-    const NECK_W = 14;      // Bán kính cổ hẹp (Độ mở hẹp nhất tại cổ đồng hồ)
+    const CX = W / 2;       // 150 (Đường trục tung (trục dọc) chính giữa đồng hồ). Mọi phép tính bề rộng đều tính từ trục này sang trái/phải.
+    const NECK_Y = H / 2;   // 250 (Điểm thắt hẹp ở trung tâm đồng hồ cát). Tâm của cổ đồng hồ (y = 250). Đây là vị trí hẹp nhất của đồng hồ cát
+    const NECK_W = 14;      // Bán kính của cổ đồng hồ (14 px). Tức là từ CX sang thành kính chỉ có 14 px tại vị trí cổ
 
-    const TOP_BULB_MIN_Y = 35;
-    const TOP_BULB_MAX_Y = 225;
+    const TOP_BULB_MIN_Y = 35; // Mép trên của phần thủy tinh. Đây là nơi bắt đầu tính hình dạng của bầu trên
+    const TOP_BULB_MAX_Y = 225; // Đáy của bầu trên
     // => Giới hạn không gian chứa cát ở bầu trên (35 -> 225)
 
-    const BOTTOM_BULB_MIN_Y = 248;
-    const BOTTOM_BULB_MAX_Y = 470;
+    const BOTTOM_BULB_MIN_Y = 248; // Điểm bắt đầu của bầu dưới, gần như sát NECK_Y
+    const BOTTOM_BULB_MAX_Y = 470; // Đáy của bầu dưới
     // => Giới hạn không gian hiển thị ảnh và cát ở bầu dưới (248 ➔ 470)
 
     // Kích thước ảnh HD phủ vừa khít bầu dưới (ôm sát viền kính)
@@ -61,13 +61,37 @@
     // Mảng lưu trữ danh sách các hạt cát đang chuyển động
     let sandParticles = [];
 
-    // Độ rộng đường cong thủy tinh tại tọa độ Y (Khớp 100% đường Bezier bầu đồng hồ cát)
+    // - Tính toán chính xác bán kính (độ rộng từ trục giữa ra thành kính) của bầu thủy tinh đồng hồ cát tại bất kỳ vị trí chiều cao y nào
+    // - Đồng hồ cát không phải là một hình trụ thẳng mà có dáng uốn cong mềm mại (hẹp ở giữa cổ và phình to ở 2 bầu trên/dưới)
+    // - Hàm này đóng vai trò toán học mô phỏng đường cong thủy tinh đó bằng Đường cong Bézier bậc 3 (Cubic Bézier Curve), phục vụ các mục đích:
+    // 1) Giới hạn hạt cát: Giúp các hạt cát khi rơi hay nằm trong bầu kính không bao giờ bị chui ra ngoài viền thủy tinh
+    // 2) Cắt hình ảnh & Mặt cát: Giúp hiệu ứng mặt cát dâng lên và hình ảnh hiển thị đúng theo dáng phình/thắt của chiếc đồng hồ
+    // 3) Đảm bảo đối xứng 100: Bầu trên và bầu dưới có hình dáng hoàn toàn đối xứng qua điểm thắt ở trung tâm cổ đồng hồ (NECK_Y)
     function getGlassWidthAt(y) {
+
+        // Giới hạn bầu kính nằm trong khoảng y từ TOP_BULB_MIN_Y 35 đến BOTTOM_BULB_MAX_Y 470, 
+        // nếu không nằm trong khoảng này điểm đó không thuộc phần thủy tinh
         if (y < TOP_BULB_MIN_Y || y > BOTTOM_BULB_MAX_Y) return 0;
+
+        // Tính khoảng cách theo chiều dọc từ vị trí y đến tâm cổ
+        // Hàm Math.abs (giá trị tuyệt đối) giúp bầu trên và bầu dưới tính ra kết quả bán kính giống hệt nhau, tạo ra độ đối xứng hoàn hảo
         let dy = Math.abs(y - NECK_Y);
+
+        // Trong phạm vi 10px quanh cổ (y từ 240 đến 260), thành kính chạy thẳng song song với bán kính hẹp nhất cố định là NECK_W = 14px
         if (dy <= 10) return NECK_W;
+
+        // Chuẩn hóa tham số t về khoảng [0, 1]
+        // Độ dài từ sát cổ (dy = 10) đến điểm phình nhất của bầu (dy = 220) là 210px
+        // Phép chia (dy - 10) / 210 giúp chuyển đổi khoảng cách dy thành tham số t chạy từ 0 đến 1
+        // Sát cổ đồng hồ (dy = 10) => t = 0
+        // Nơi bầu phình to nhất (dy = 220) => t = 1.
         let t = (dy - 10) / 210;
+
+        // Đảm bảo t không vượt quá 1 nếu y nằm ở mép sát đế
         if (t > 1) t = 1;
+
+        // Công thức đường cong Bézier bậc 3 (Cubic Bézier)
+        // Giúp bán kính bw tăng từ 14px đến 98px theo một đường cong mềm mại, tự nhiên như chiếc đồng hồ cát thật, thay vì là một đường thẳng gấp khúc thô cứng
         let bw = (1 - t) * (1 - t) * (1 - t) * NECK_W +
             3 * (1 - t) * (1 - t) * t * NECK_W +
             3 * (1 - t) * t * t * 98 +
@@ -128,7 +152,7 @@
 
                 // Lưu lại toàn bộ trạng thái (state) hiện tại của Canvas Context vào một ngăn xếp (stack). Nó không lưu nội dung hình ảnh đã vẽ, chỉ lưu các thiết lập vẽ
                 // Lưu trạng thái hiện tại của Canvas Context (hệ tọa độ, góc quay, tỉ lệ, kiểu vẽ...) để có thể khôi phục sau khi xoay ảnh
-                hdCtx.save(); 
+                hdCtx.save();
 
 
                 hdCtx.translate(hdCanvas.width / 2, hdCanvas.height / 2); // Dời gốc tọa độ về tâm của Canvas ẩn
@@ -152,7 +176,7 @@
                 hdCtx.drawImage(img, rx, ry, rw, rh);
             }
 
-            // Hạt cát sinh động tập trung ở bầu trên
+            // Khởi tạo 240 hạt cát ở bầu thủy tinh phía trên
             sandParticles = [];
             for (let i = 0; i < 240; i++) {
                 let topY = TOP_BULB_MIN_Y + Math.random() * (TOP_BULB_MAX_Y - TOP_BULB_MIN_Y - 20);
